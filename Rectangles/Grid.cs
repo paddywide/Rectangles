@@ -102,26 +102,62 @@ namespace Rectangles
         }
         public void DisplayGrid()
         {
+            /*
+            **0 * 1 * 2 * 3 * 4 * 5 * 6 * 7 * 8 * 9 * 10 * 11 * 12 * 13 * 14 * 15 * 16 * 17 * 18 * 19 * ***********
+            0 * ***************************************************
+            1 * ***************************************************
+            2 * ***************************************************
+            3 * ***************************************************
+            4 * ***************************************************
+            5 * **********| -----------------| -*********************
+            6 * **********| *****************| **********************
+            7 * **********| *****************| **********************
+            8 * **********| *****************| **********************
+            9 * **********| *****************| **********************
+            10 * *********| *****************| ***********************
+            11 * *********| *****************| ***********************
+            12 * *********| *****************| ***********************
+            13 * *********| *****************| ***********************
+            14 * *********| _________________ | _ * *********************
+            15 * ***************************************************
+            16 * ***************************************************
+            17 * ***************************************************
+            18 * ***************************************************
+            19 * ***************************************************
+
+            */
             //each coordinate occupy 2 slot of X. It will not look too tight.
-            int xOffset = 3;
+            int xOffset = 2;
             int yOffset = 1;
             int twoDigitOffset = 1;
-            int xLength = X * 2 + xOffset;
-            int yLength = Y + 1;
-            string[,] graph = new string[yLength, xLength];
+
+            int xWidth;
+            if (X > 9)
+                xWidth = (X - 9) * 1 + 9 * 2;
+            else
+                xWidth = 9 * 2;
+
+            int xLength = xWidth + xOffset;
+            int xCoorLength = X * 2 + xOffset;
+            int yLength = Y + yOffset;
+            string[,] graph = new string[yLength, xCoorLength];
             //initial the array with space
             for (int y = 0; y <= yLength - 1; y++)
             {
-                for (int x = 0; x <= xLength - 1; x++)
+                for (int x = 0; x <= xCoorLength - 1; x++)
                 {
-                    graph[y, x] = "*";
+                    graph[y, x] = " ";
                 }
             }
 
             //initial X coordinate
-            for (int x = xOffset; x <= xLength - 1; x = x + 2)
+            for (int x = xOffset, i = 0; x < xLength; x = (i <= 8) ? x + 2 : x + 1, i++)
             {
-                graph[0, x] = (((x - xOffset) / 2).ToString());
+                int a = 0;
+                if (i == 18)
+                    a++;
+                graph[0, x] = i.ToString();
+
             }
 
             //initial Y coordinate
@@ -133,32 +169,31 @@ namespace Rectangles
             //loop for each retangle and set on the graph
             foreach (Rectangle r in rectangles)
             {
+                int xEdgeLen;
+                if (r.TopLeftX + r.Width < 10)
+                    xEdgeLen = (r.TopLeftX + r.Width) * 2;
+                else
+                    xEdgeLen = (r.TopLeftX + r.Width - 9) * 1 + 9 * 2;
                 //print rectangle top and bottom edge
-                for (int edge = r.TopLeftX * 2 + xOffset; edge <= (r.TopLeftX + r.Width) * 2 - 1 + xOffset; edge++)
+                for (int edge = r.TopLeftX * 2 + xOffset; edge <= xEdgeLen + xOffset; edge++)
                 {
-                    int ynow = r.TopLeftY + yOffset;
-
                     graph[r.TopLeftY + yOffset, r.TopLeftY + yOffset < 10 ? edge: edge - 1 ] = "-";
                     graph[r.TopLeftY + r.Height + yOffset - 1, r.TopLeftY + r.Height + yOffset < 10 ? edge : edge - 1] = "_";
-                    //graph[r.TopLeftY + yOffset, edge] = "-";
-                    //graph[r.TopLeftY + r.Height + yOffset - 1, edge] = "-";
-
                 }
 
 
                 //print rectangle left and right edge
                 for (int edge = r.TopLeftY; edge <= r.TopLeftY + r.Height - 1; edge++)
                 {
-                    //if (edge ==)
                     graph[edge + yOffset, edge < 10 ? r.TopLeftX * 2 + xOffset : r.TopLeftX * 2 + xOffset - twoDigitOffset] = "|";
-                    graph[edge + yOffset, edge < 10 ? (r.TopLeftX + r.Width) * 2 : (r.TopLeftX + r.Width) * 2 - twoDigitOffset] = "|";
+                    graph[edge + yOffset, edge < 10 ? xEdgeLen + xOffset : xEdgeLen + xOffset - twoDigitOffset] = "|";
                 }
             }
 
             //print on the screen
             for (int y = 0; y <= yLength - 1; y++)
             {
-                for (int x = 0; x <= xLength - 1; x++)
+                for (int x = 0; x <= xCoorLength - 1; x++)
                 {
                     Console.Write(graph[y, x]);
                 }
